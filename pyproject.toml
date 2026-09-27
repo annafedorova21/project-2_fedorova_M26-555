@@ -5,9 +5,9 @@ description = ""
 authors = [
     {name = "Федорова Анна",email = "annafedorova21@yandex.ru"}
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
-    "prompt (>=0.4.1,<0.5.0)"
+    "prettytable (==3.10.2)"
 ]
 
 
@@ -21,11 +21,11 @@ packages = [
  ]
 
 [tool.poetry.scripts]
-project = "src.primitive_db.main:main"
+database = "src.primitive_db.main:main"
 
 [tool.ruff]
 line-length = 88
-target-version = "py312"
+target-version = "py310"
 exclude = ["venv", ".venv", "dist", "__pycache__"]
 
 [tool.ruff.lint]
