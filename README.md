@@ -1,10 +1,29 @@
 # Primitive DB
 
-Простая консольная база данных для создания и удаления таблиц.
+Проект База данных.
+
+## Установка и запуск
+
+Для управления Python и зависимостями используется
+[`uv`](https://docs.astral.sh/uv/). После установки `uv` выполните:
+
+```bash
+uv sync
+uv run database
+```
+
+Проверка стиля и сборка пакета:
+
+```bash
+uv run ruff check .
+uv build
+```
 
 ## Демонстрация
 
-[![Демонстрация работы Primitive DB](https://asciinema.org/a/OzsRtrh7Y3veNwzF.svg)](https://asciinema.org/a/OzsRtrh7Y3veNwzF)
+[![Демонстрация управления таблицами](https://asciinema.org/a/OzsRtrh7Y3veNwzF.svg)](https://asciinema.org/a/OzsRtrh7Y3veNwzF)
+
+[![Демонстрация работы Primitive DB](https://asciinema.org/a/rcnH456IaK1wNYFs.svg)](https://asciinema.org/a/rcnH456IaK1wNYFs)
 
 ## Управление таблицами
 
@@ -25,4 +44,41 @@
 Введите команду: drop_table users
 Таблица "users" успешно удалена.
 Введите команду: exit
+```
+
+## CRUD-операции
+
+Все поля таблицы обязательны. Значение `ID` в команде `insert` указывать не
+нужно: база данных назначает его автоматически на основе максимального
+существующего ID. Строковые значения записываются в кавычках. Поддерживаются
+значения типов `int`, `str` и `bool` (`true`/`false`).
+
+- `insert into <таблица> values (<значение1>, ...)` — добавить запись;
+- `select from <таблица>` — вывести все записи;
+- `select from <таблица> where <столбец> = <значение>` — найти записи;
+- `update <таблица> set <столбец> = <значение> where <столбец> = <значение>` —
+  обновить найденные записи;
+- `delete from <таблица> where <столбец> = <значение>` — удалить найденные
+  записи;
+- `info <таблица>` — вывести схему и количество записей.
+
+Пример:
+
+```text
+>>> Введите команду: insert into users values ("Sergei", 28, true)
+Запись с ID=1 успешно добавлена в таблицу "users".
+>>> Введите команду: select from users where age = 28
++----+--------+-----+-----------+
+| ID |  name  | age | is_active |
++----+--------+-----+-----------+
+| 1  | Sergei | 28  |    True   |
++----+--------+-----+-----------+
+>>> Введите команду: update users set age = 29 where name = "Sergei"
+Запись с ID=1 в таблице "users" успешно обновлена.
+>>> Введите команду: delete from users where ID = 1
+Запись с ID=1 успешно удалена из таблицы "users".
+>>> Введите команду: info users
+Таблица: users
+Столбцы: ID:int, name:str, age:int, is_active:bool
+Количество записей: 0
 ```

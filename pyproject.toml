@@ -7,21 +7,18 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "prettytable (==3.10.2)"
+    "prettytable==3.10.2",
 ]
 
+[project.scripts]
+database = "src.primitive_db.main:main"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
 
-[tool.poetry]
-packages = [
-     { include = "src" },
- ]
-
-[tool.poetry.scripts]
-database = "src.primitive_db.main:main"
+[tool.setuptools.packages.find]
+include = ["src*"]
 
 [tool.ruff]
 line-length = 88
@@ -31,7 +28,8 @@ exclude = ["venv", ".venv", "dist", "__pycache__"]
 [tool.ruff.lint]
 select = ["E", "F", "I"]
 ignore = []
+
 [dependency-groups]
 dev = [
-    "ruff (>=0.16.8,<0.17.0)"
+    "ruff>=0.16.8,<0.17.0",
 ]

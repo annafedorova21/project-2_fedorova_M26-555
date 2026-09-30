@@ -3,5 +3,5 @@
 from src.primitive_db.engine import run
 
 
-def main():
+def main() -> None:
     run()
