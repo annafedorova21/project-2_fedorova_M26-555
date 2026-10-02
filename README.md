@@ -12,7 +12,8 @@ Primitive DB — учебная консольная база данных на 
 
 ```bash
 uv sync --locked
-uv run database
+source .venv/bin/activate
+database
 ```
 
 Если установлен `make`, можно использовать:
@@ -35,7 +36,7 @@ make build
 
 ## Демонстрация
 
-[![Демонстрация работы](https://asciinema.org/a/QJmo9EEXaawtX58D.svg)](https://asciinema.org/a/QJmo9EEXaawtX58D)
+[▶ Смотреть демонстрацию на asciinema](https://asciinema.org/a/QJmo9EEXaawtX58D)
 
 ## Управление таблицами
 
