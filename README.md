@@ -1,8 +1,8 @@
-# Primitive DB
+# Примитивная база данных
 
-Primitive DB — учебная консольная база данных на Python. Программа позволяет
+Консольная база данных на Python. Позволяет
 создавать и удалять таблицы, добавлять, читать, обновлять и удалять записи.
-Схемы таблиц хранятся в `db_meta.json`, а данные —
+Схемы таблиц хранятся в `db_meta.json`, а данные -
 в JSON-файлах каталога `data/` в рабочей директории программы.
 
 ## Установка и запуск
@@ -12,7 +12,8 @@ Primitive DB — учебная консольная база данных на 
 
 ```bash
 uv sync --locked
-uv run database
+source .venv/bin/activate
+database
 ```
 
 Если установлен `make`, можно использовать:
@@ -35,7 +36,7 @@ make build
 
 ## Демонстрация
 
-[![Демонстрация работы](https://asciinema.org/a/QJmo9EEXaawtX58D.svg)](https://asciinema.org/a/QJmo9EEXaawtX58D)
+[▶ Смотреть демонстрацию на asciinema](https://asciinema.org/a/QJmo9EEXaawtX58D)
 
 ## Управление таблицами
 
