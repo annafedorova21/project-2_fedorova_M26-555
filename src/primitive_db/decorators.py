@@ -7,13 +7,16 @@ import prompt
 FuncParams = ParamSpec("FuncParams")
 FuncReturn = TypeVar("FuncReturn")
 
+
 def handle_db_errors(
     func: Callable[FuncParams, FuncReturn],
 ) -> Callable[FuncParams, FuncReturn | None]:
     """Перехватывает ошибки при работе с БД."""
 
     @wraps(func)
-    def wrapper(*args: FuncParams.args, **kwargs: FuncParams.kwargs) -> FuncReturn | None:
+    def wrapper(
+        *args: FuncParams.args, **kwargs: FuncParams.kwargs
+    ) -> FuncReturn | None:
         try:
             return func(*args, **kwargs)
         except FileNotFoundError:
@@ -80,10 +83,7 @@ def log_time(
             return call(*args, **kwargs)
         finally:
             end = time.monotonic() - start
-            print(
-                f"Функция {call.__name__} выполнилась за "
-                f"{end:.3f} секунд."
-            )
+            print(f"Функция {call.__name__} выполнилась за {end:.3f} секунд.")
 
     return wrapper
 

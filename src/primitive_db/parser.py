@@ -1,6 +1,8 @@
 import re
 from typing import Any
 
+from src.primitive_db.constants import TABLE_NAME_PATTERN
+
 
 def parse_value(value: str) -> Any:
     """Преобразует строковое значение в поддерживаемый тип.
@@ -17,7 +19,7 @@ def parse_value(value: str) -> Any:
     if normalized_value in {"true", "false"}:
         return normalized_value == "true"
 
-    if value.startswith(("'", '"')) and value.endswith(("'", '"')):
+    if len(value) >= 2 and value[0] in ("'", '"') and value[-1] == value[0]:
         return value[1:-1]
 
     try:
@@ -47,6 +49,34 @@ def parse_clause(clause: str) -> dict[str, Any]:
     return {column: parse_value(raw_value)}
 
 
+def parse_values(raw_values: str) -> list[Any]:
+    """Разбирает значения, разделённые запятыми.
+
+    Args:
+        raw_values: Строка значений, разделённых запятыми.
+
+    Returns:
+        Список значений, преобразованных в поддерживаемые типы.
+    """
+    return [parse_value(value) for value in raw_values.split(",")]
+
+
+def _match_command(command: str, pattern: str) -> re.Match[str]:
+    """Проверяет полную структуру команды и извлекает её аргументы.
+
+    Args:
+        command: Проверяемая команда.
+        pattern: Регулярное выражение для проверки структуры команды.
+
+    Returns:
+        Объект совпадения с аргументами команды в группах.
+    """
+    match = re.fullmatch(pattern, command.strip())
+    if match is None:
+        raise ValueError(f"Некорректная команда: {command}")
+    return match
+
+
 def parse_insert(command: str) -> dict[str, Any]:
     """Парсит insert-команду.
 
@@ -56,19 +86,13 @@ def parse_insert(command: str) -> dict[str, Any]:
     Returns:
         Имя таблицы и значения новой записи.
     """
-    try:
-        prefix, raw_values = command.split(" values ", 1)
-        _, _, table_name = prefix.split()
-    except ValueError as error:
-        raise ValueError(f"Некорректная insert-команда: {command}") from error
-
-    raw_values = raw_values.strip()
-    if not (raw_values.startswith("(") and raw_values.endswith(")")):
-        raise ValueError(f"Некорректная insert-команда: {command}")
+    table_name, raw_values = _match_command(
+        command, rf"insert\s+into\s+({TABLE_NAME_PATTERN})\s+values\s*\((.*)\)"
+    ).groups()
 
     return {
         "table_name": table_name,
-        "values": [parse_value(value) for value in raw_values[1:-1].split(",")]
+        "values": parse_values(raw_values),
     }
 
 
@@ -81,18 +105,13 @@ def parse_select(command: str) -> dict[str, Any]:
     Returns:
         Имя таблицы и условие отбора записей.
     """
-    where_parts = command.split(" where ", 1)
-
-    try:
-        _, _, table_name = where_parts[0].split()
-    except ValueError as error:
-        raise ValueError(f"Некорректная select-команда: {command}") from error
+    table_name, raw_where = _match_command(
+        command, rf"select\s+from\s+({TABLE_NAME_PATTERN})(?:\s+where\s+(.+))?"
+    ).groups()
 
     return {
         "table_name": table_name,
-        "where_clause": (
-            parse_clause(where_parts[1]) if len(where_parts) == 2 else None
-        ),
+        "where_clause": parse_clause(raw_where) if raw_where is not None else None,
     }
 
 
@@ -105,12 +124,10 @@ def parse_update(command: str) -> dict[str, Any]:
     Returns:
         Имя таблицы, новые значения и условие отбора.
     """
-    try:
-        head, raw_where = command.split(" where ", 1)
-        prefix, raw_set = head.split(" set ", 1)
-        _, table_name = prefix.split()
-    except ValueError as error:
-        raise ValueError(f"Некорректная update-команда: {command}") from error
+    table_name, raw_set, raw_where = _match_command(
+        command,
+        rf"update\s+({TABLE_NAME_PATTERN})\s+set\s+(.+?)\s+where\s+(.+)",
+    ).groups()
 
     return {
         "table_name": table_name,
@@ -128,11 +145,9 @@ def parse_delete(command: str) -> dict[str, Any]:
     Returns:
         Имя таблицы и условие отбора записей.
     """
-    try:
-        prefix, raw_where = command.split(" where ", 1)
-        _, _, table_name = prefix.split()
-    except ValueError as error:
-        raise ValueError(f"Некорректная delete-команда: {command}") from error
+    table_name, raw_where = _match_command(
+        command, rf"delete\s+from\s+({TABLE_NAME_PATTERN})\s+where\s+(.+)"
+    ).groups()
 
     return {
         "table_name": table_name,
@@ -149,10 +164,7 @@ def parse_info(command: str) -> dict[str, Any]:
     Returns:
         Имя таблицы.
     """
-    try:
-        _, table_name = command.split()
-    except ValueError as error:
-        raise ValueError(f"Некорректная info-команда: {command}") from error
+    table_name = _match_command(command, rf"info\s+({TABLE_NAME_PATTERN})").group(1)
 
     return {"table_name": table_name}
 
@@ -175,4 +187,7 @@ def parse_crud_command(command: str, action: str) -> dict[str, Any]:
         "info": parse_info,
     }
 
-    return parsers[action](command)
+    try:
+        return parsers[action](command)
+    except ValueError as error:
+        raise SyntaxError(command) from error

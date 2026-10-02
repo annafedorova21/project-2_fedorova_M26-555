@@ -35,9 +35,7 @@ make build
 
 ## Демонстрация
 
-[![Демонстрация управления таблицами](https://asciinema.org/a/OzsRtrh7Y3veNwzF.svg)](https://asciinema.org/a/OzsRtrh7Y3veNwzF)
-
-[![Демонстрация работы Primitive DB](https://asciinema.org/a/rcnH456IaK1wNYFs.svg)](https://asciinema.org/a/rcnH456IaK1wNYFs)
+[![Демонстрация работы](https://asciinema.org/a/QJmo9EEXaawtX58D.svg)](https://asciinema.org/a/QJmo9EEXaawtX58D)
 
 ## Управление таблицами
 
