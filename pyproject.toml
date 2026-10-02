@@ -1,17 +1,20 @@
 [project]
 name = "project-2-fedorova-m26-555"
 version = "0.1.0"
-description = ""
+description = "Консольная база данных с управлением таблицами, CRUD-операциями и хранением данных в JSON."
+readme = "README.md"
 authors = [
     {name = "Федорова Анна",email = "annafedorova21@yandex.ru"}
 ]
 requires-python = ">=3.10"
 dependencies = [
     "prettytable==3.10.2",
+    "prompt==0.4.1",
 ]
 
 [project.scripts]
 database = "src.primitive_db.main:main"
+project = "src.primitive_db.main:main"
 
 [build-system]
 requires = ["setuptools>=77"]

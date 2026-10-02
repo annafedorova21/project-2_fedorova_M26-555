@@ -1,5 +1,8 @@
 install:
-	uv sync
+	uv sync --locked
+
+run:
+	uv run database
 
 project:
 	uv run database
